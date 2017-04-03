@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 
 /**
@@ -33,6 +34,8 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	public BinarySearchAutocomplete(String[] terms, double[] weights) {
 		if (terms == null || weights == null)
 			throw new NullPointerException("One or more arguments null");
+		if (terms.length != weights.length)
+			throw new IllegalArgumentException("terms and weights are not the same length");
 		myTerms = new Term[terms.length];
 		for (int i = 0; i < terms.length; i++) {
 			myTerms[i] = new Term(terms[i], weights[i]);
@@ -58,6 +61,7 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 */
 	public static int firstIndexOf(Term[] a, Term key, Comparator<Term> comparator) {
 		// TODO: Implement firstIndexOf
+		Collections.BinarySearch(a, comparator);
 		return -1;
 	}
 
@@ -128,6 +132,10 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 */
 	public double weightOf(String term) {
 		// TODO complete weightOf
+		for (Term t : myTerms) {
+			if (t.getWord().equalsIgnoreCase(term))
+				return t.getWeight();
+		}
 		return 0.0;
 	}
 }

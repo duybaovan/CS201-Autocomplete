@@ -68,6 +68,6 @@ public class BruteAutocomplete implements Autocompletor {
 				return t.getWeight();
 		}
 		// term is not in dictionary return 0
-		return 0;
+		return 0.0;
 	}
 }
