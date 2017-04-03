@@ -56,6 +56,7 @@ public class BruteAutocomplete implements Autocompletor {
 		for (Term t : myTerms) {
 			if (t.getWeight() > maxWeight && t.getWord().startsWith(prefix)) {
 				maxTerm = t.getWord();
+				maxWeight = t.getWeight();
 			}
 		}
 		return maxTerm;
