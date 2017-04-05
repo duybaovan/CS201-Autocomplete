@@ -23,6 +23,7 @@ public class BruteAutocomplete implements Autocompletor {
 			if (weights[i] < 0)
 				throw new IllegalArgumentException("Negative weight "+ weights[i]);
 		}
+		// No duplicate terms
 		if (words.size() != terms.length)
 			throw new IllegalArgumentException("Duplicate input terms");
 	}

@@ -61,7 +61,7 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 */
 	public static int firstIndexOf(Term[] a, Term key, Comparator<Term> comparator) {
 		// TODO: Implement firstIndexOf
-		Collections.BinarySearch(a, comparator);
+//		Collections.BinarySearch(a, comparator);
 		return -1;
 	}
 

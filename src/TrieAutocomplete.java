@@ -1,3 +1,5 @@
+import java.util.HashSet;
+
 /**
  * General trie/priority queue algorithm for implementing Autocompletor
  * 
@@ -28,12 +30,20 @@ public class TrieAutocomplete implements Autocompletor {
 	public TrieAutocomplete(String[] terms, double[] weights) {
 		if (terms == null || weights == null)
 			throw new NullPointerException("One or more arguments null");
+		if (terms.length != weights.length)
+			throw new IllegalArgumentException("terms and weights are not the same length");
+		HashSet<String> words = new HashSet<String>();
 		// Represent the root as a dummy/placeholder node
 		myRoot = new Node('-', null, 0);
 
 		for (int i = 0; i < terms.length; i++) {
+			if (words.contains(terms[i]))
+				throw new IllegalArgumentException("Duplicate input terms " + terms[i]);
+			words.add(terms[i]);
 			add(terms[i], weights[i]);
 		}
+		if (words.size() != terms.length)
+			throw new IllegalArgumentException("Duplicate input terms");
 	}
 
 	/**
@@ -55,6 +65,19 @@ public class TrieAutocomplete implements Autocompletor {
 	 */
 	private void add(String word, double weight) {
 		// TODO: Implement add
+		// Find the node (Creating the new Nodes where necessary) for word
+		if (word == null)
+			throw new NullPointerException("Word is null " + word);
+		if (weight < 0)
+			throw new IllegalArgumentException("Negative weight "+ weight);
+		Node current = myRoot;
+		for (char ch:word.toCharArray()){
+			if (!current.children.containsKey(ch))
+				current.children.put(ch, new Node(ch, current, weight));		
+			current = current.getChild(ch);
+		}
+		current.isWord = true;
+		current.myWord = word;
 	}
 
 	/**

@@ -6,7 +6,10 @@ public class Test {
 		String[] names = { "ape", "app", "ban", "bat", "bee", "car", "cat" };
 		double[] weights = { 6, 4, 4, 3, 5, 7, 1};
 		Autocompletor ac = new BruteAutocomplete(names, weights);
-		System.out.println(ac.topMatch("ba") );
+		System.out.println(ac.topMatches("",6) );
+		System.out.println(ac.topMatches("b",2) );
+		System.out.println(ac.topMatches("ba",2) );
+		System.out.println(ac.topMatches("d",10) );
 //		System.out.println("aaa".startsWith("") );
 	}
 }
