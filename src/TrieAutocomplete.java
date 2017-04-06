@@ -1,4 +1,7 @@
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
 
 /**
  * General trie/priority queue algorithm for implementing Autocompletor
@@ -72,12 +75,16 @@ public class TrieAutocomplete implements Autocompletor {
 			throw new IllegalArgumentException("Negative weight "+ weight);
 		Node current = myRoot;
 		for (char ch:word.toCharArray()){
+			if (current.mySubtreeMaxWeight < weight)
+				current.mySubtreeMaxWeight = weight;
 			if (!current.children.containsKey(ch))
 				current.children.put(ch, new Node(ch, current, weight));		
 			current = current.getChild(ch);
 		}
+		current.setWeight(weight);
 		current.isWord = true;
-		current.myWord = word;
+		current.setWord(word);
+//		System.out.println(word + ": " + weight);
 	}
 
 	/**
@@ -102,7 +109,33 @@ public class TrieAutocomplete implements Autocompletor {
 	 */
 	public Iterable<String> topMatches(String prefix, int k) {
 		// TODO: Implement topKMatches
-		return null;
+		if (k < 0)
+			throw new IllegalArgumentException("Illegal value of k:"+k);
+		// maintain pq of size k
+		Node current = myRoot;
+		PriorityQueue<Node> pq = new PriorityQueue<Node>(k, new Node.ReverseSubtreeMaxWeightComparator());
+		PriorityQueue<Node> pq1 = new PriorityQueue<Node>(k, new Node.ReverseSubtreeMaxWeightComparator());
+		LinkedList<String> L = new LinkedList<String>();
+		for (char ch : prefix.toCharArray()){
+			if (current.children.containsKey(ch))
+				current = current.getChild(ch);
+			else return L;
+		}
+//		System.out.println(current.myInfo);
+		pq.add(current);
+		while (pq.size() > 0 && pq1.size() <= k){
+//			System.out.println(pq.size());
+			current = pq.poll();
+			if (current.isWord)
+				pq1.add(current);
+			for(Node child : current.children.values())
+				pq.add(child);
+////			return the first k values of the sorted list L, or all of L if L does not have k values
+		}
+		int numResults = Math.min(k, pq1.size());
+		for (int i = 0; i < numResults; i++)
+			L.addLast(pq1.poll().getWord());
+		return L;
 	}
 
 	/**
@@ -118,16 +151,43 @@ public class TrieAutocomplete implements Autocompletor {
 	 */
 	public String topMatch(String prefix) {
 		// TODO: Implement topMatch
-		return null;
+		if (prefix == null)
+			throw new NullPointerException("Prefix is null " + prefix);
+		Node current = myRoot;
+		for (char ch:prefix.toCharArray()){
+			if (current.children.containsKey(ch))
+				current = current.getChild(ch);
+			else 
+				return "";
+		}
+		double max = current.mySubtreeMaxWeight;
+//		System.out.println(current.myInfo+max+max2);
+		if (current.myWeight == max)
+			return current.myWord;
+		while(current.myWeight != max){
+			for (Node child : current.children.values())
+				if(child.mySubtreeMaxWeight == max){
+					current = child;
+					break;			
+				}
+		}
+		return current.myWord;
 	}
 
 	/**
 	 * Return the weight of a given term. If term is not in the dictionary,
 	 * return 0.0
 	 */
-	public double weightOf(String term) {
+	public double weightOf(String prefix) {
 		// TODO complete weightOf
-		return 0.0;
+		Node current = myRoot;
+		for (char ch:prefix.toCharArray()){
+			if (current.children.containsKey(ch))
+				current = current.getChild(ch);
+			else 
+				return 0.0;
+		}
+		return current.myWeight;
 	}
 
 	/**

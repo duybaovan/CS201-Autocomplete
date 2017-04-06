@@ -113,6 +113,57 @@ public class TestTerm {
 		}
 	}
 
+	@Test(timeout = 10000)
+	/**
+	 * Tests PrefixOrder
+	 */
+	public void testPrefixOrder() {
+		// Tests basic cases
+		Term[] terms1 = getTerms();
+		Term[] sorted1 = { terms1[0], terms1[3], terms1[2], terms1[1], terms1[4], terms1[6], terms1[5] };
+		for (int i = 0; i < terms1.length / 2; i++) {
+			Term temp = terms1[i];
+			terms1[i] = terms1[terms1.length - 1 - i];
+			terms1[terms1.length - 1 - i] = temp;
+		}
+		Arrays.sort(terms1, new Term.PrefixOrder(1));
+		assertArrayEquals(sorted1, terms1);
+
+		Term[] terms2 = getTerms();
+		Term[] sorted2 = { terms2[0], terms2[2], terms2[1], terms2[3], terms2[4], terms2[6], terms2[5] };
+		for (int i = 0; i < terms2.length / 2; i++) {
+			Term temp = terms2[i];
+			terms2[i] = terms2[terms2.length - 1 - i];
+			terms2[terms2.length - 1 - i] = temp;
+		}
+		Arrays.sort(terms2, new Term.PrefixOrder(2));
+		assertArrayEquals(sorted2, terms2);
+
+		Term[] terms3 = getTerms();
+		Term[] sorted3 = { terms3[0], terms3[1], terms3[2], terms3[3], terms3[4], terms3[6], terms3[5] };
+		for (int i = 0; i < terms3.length / 2; i++) {
+			Term temp = terms3[i];
+			terms3[i] = terms3[terms3.length - 1 - i];
+			terms3[terms3.length - 1 - i] = temp;
+		}
+		Arrays.sort(terms3, new Term.PrefixOrder(3));
+		assertArrayEquals(sorted3, terms3);
+
+		// Test prefix case
+		Term[] terms4 = getTerms();
+		Term[] sorted4 = { terms4[0], terms4[1], terms4[2], terms4[3], terms4[4], terms4[5], terms4[6] };
+		shuffle(terms4);
+		Arrays.sort(terms4, new Term.PrefixOrder(10));
+		assertArrayEquals(sorted4, terms4);
+
+		// Test zero case
+		Term[] terms5 = getTerms();
+		shuffle(terms5);
+		Term[] sorted5 = terms5.clone();
+		Arrays.sort(terms5, new Term.PrefixOrder(0));
+		assertArrayEquals(sorted5, terms5);
+	}
+
 	/**
 	 * This test checks that toString returns the expected value
 	 */
