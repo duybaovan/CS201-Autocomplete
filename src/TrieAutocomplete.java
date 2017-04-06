@@ -109,6 +109,8 @@ public class TrieAutocomplete implements Autocompletor {
 	 */
 	public Iterable<String> topMatches(String prefix, int k) {
 		// TODO: Implement topKMatches
+		if (prefix == null)
+			throw new NullPointerException("Prefix is null");
 		if (k < 0)
 			throw new IllegalArgumentException("Illegal value of k:"+k);
 		// maintain pq of size k

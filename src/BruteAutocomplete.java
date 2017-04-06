@@ -29,6 +29,8 @@ public class BruteAutocomplete implements Autocompletor {
 	}
 
 	public Iterable<String> topMatches(String prefix, int k) {
+		if (prefix == null)
+			throw new NullPointerException("Prefix is null");
 		if (k < 0)
 			throw new IllegalArgumentException("Illegal value of k:"+k);
 		// maintain pq of size k
