@@ -1,9 +1,9 @@
 Name: Peifan Liu
 NetID: pl112
-Hours Spent: Give an exact (decimal) number here
-Consulted With: provide names or NetIDs of any students, TAs, or professors you consulted with on the assignment. If you did not consult with anyone, you must explicitly write NONE.
-Resources Used: Any books, papers, or online resources. If you did not use any outside resources, you must explicitly write NONE 
-Impressions: Your answer here
+Hours Spent: 12.0
+Consulted With: Discussion TA
+Resources Used: Discussion guide, ppt, class slides. 
+Impressions: A little bit difficult.
 ----------------------------------------------------------------------
 Problem 1: What is the order of growth (big-Oh) of the number of compares
 (in the worst case) that each of the operations in the Autocomplete data
@@ -28,3 +28,82 @@ the runtime of topMatch and topKMatches?
 4A BruteAutocomplete:
 4B BinarySearchAutocomplete:
 4C TrieAutocomplete:
+
+
+Benchmarking BruteAutocomplete...
+Found 333333 words
+Time to initialize - 0.085741547
+Time for topMatch("") - 0.002410635377
+Time for topMatch("khombu") - 0.003817394242
+Time for topMatch("k") - 0.002309154092
+Time for topMatch("kh") - 0.002361370927
+Time for topMatch("notarealword") - 0.005787094650867052
+Time for topKMatches("", 1) -  0.006849594101369863
+Time for topKMatches("", 4) -  0.0067590948891891895
+Time for topKMatches("", 7) -  0.006728212225806452
+Time for topKMatches("khombu", 1) -  0.0067712865033829495
+Time for topKMatches("khombu", 4) -  0.006782216697831979
+Time for topKMatches("khombu", 7) -  0.006677286116154873
+Time for topKMatches("k", 1) -  0.006617603924603175
+Time for topKMatches("k", 4) -  0.006673322264
+Time for topKMatches("k", 7) -  0.006603693434036939
+Time for topKMatches("kh", 1) -  0.006632036370026525
+Time for topKMatches("kh", 4) -  0.006625958041005291
+Time for topKMatches("kh", 7) -  0.006637520031830239
+Time for topKMatches("notarealword", 1) -  0.006393611340996168
+Time for topKMatches("notarealword", 4) -  0.006238109024937656
+Time for topKMatches("notarealword", 7) -  0.006195109131188118
+
+
+Benchmarking BinarySearchAutocomplete...
+Found 333333 words
+Time to initialize - 0.494645915
+Time for topMatch("") - 0.02249641337219731
+Time for topMatch("khombu") - 2.8202207E-4
+Time for topMatch("k") - 2.37898931E-4
+Time for topMatch("kh") - 2.2781803E-4
+Time for topMatch("notarealword") - 2.21774305E-4
+Time for topKMatches("", 1) -  0.022438750573991032
+Time for topKMatches("", 4) -  0.014223122571022727
+Time for topKMatches("", 7) -  0.011587521386574075
+Time for topKMatches("khombu", 1) -  1.611792E-6
+Time for topKMatches("khombu", 4) -  1.696269E-6
+Time for topKMatches("khombu", 7) -  1.732587E-6
+Time for topKMatches("k", 1) -  1.06601279E-4
+Time for topKMatches("k", 4) -  1.04897904E-4
+Time for topKMatches("k", 7) -  1.06739444E-4
+Time for topKMatches("kh", 1) -  3.45491E-6
+Time for topKMatches("kh", 4) -  3.293455E-6
+Time for topKMatches("kh", 7) -  3.264243E-6
+Time for topKMatches("notarealword", 1) -  1.935492E-6
+Time for topKMatches("notarealword", 4) -  2.064183E-6
+Time for topKMatches("notarealword", 7) -  2.39262E-6
+
+Benchmarking TrieAutocomplete...
+Found 333333 words
+Time to initialize - 0.42664355
+Created 805917 nodes
+Time for topMatch("") - 2.553287E-6
+Time for topMatch("khombu") - 6.84509E-7
+Time for topMatch("k") - 1.422308E-6
+Time for topMatch("kh") - 7.05035E-7
+Time for topMatch("notarealword") - 4.20021E-7
+Time for topKMatches("", 1) -  1.1629927E-5
+Time for topKMatches("", 4) -  9.174934E-6
+Time for topKMatches("", 7) -  4.992488E-6
+Time for topKMatches("khombu", 1) -  8.66096E-7
+Time for topKMatches("khombu", 4) -  7.85566E-7
+Time for topKMatches("khombu", 7) -  8.08067E-7
+Time for topKMatches("k", 1) -  4.480488E-6
+Time for topKMatches("k", 4) -  3.288717E-6
+Time for topKMatches("k", 7) -  3.028573E-6
+Time for topKMatches("kh", 1) -  1.892464E-6
+Time for topKMatches("kh", 4) -  1.819039E-6
+Time for topKMatches("kh", 7) -  2.340118E-6
+Time for topKMatches("notarealword", 1) -  4.35416E-7
+Time for topKMatches("notarealword", 4) -  4.49628E-7
+Time for topKMatches("notarealword", 7) -  4.6226E-7
+
+
+
+
