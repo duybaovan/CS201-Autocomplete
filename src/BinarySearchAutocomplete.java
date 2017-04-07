@@ -40,13 +40,8 @@ public class BinarySearchAutocomplete implements Autocompletor {
 		if (terms.length != weights.length)
 			throw new IllegalArgumentException("terms and weights are not the same length");
 		myTerms = new Term[terms.length];
-//		HashSet<String> words = new HashSet<String>();
-		for (int i = 0; i < terms.length; i++) {
+		for (int i = 0; i < terms.length; i++)
 			myTerms[i] = new Term(terms[i], weights[i]);
-//			words.add(terms[i]);
-		}
-//		if (words.size() != terms.length)
-//			throw new IllegalArgumentException("Duplicate input terms");
 		Arrays.sort(myTerms);
 	}
 
@@ -161,25 +156,11 @@ public class BinarySearchAutocomplete implements Autocompletor {
 			throw new NullPointerException("Prefix is null");
 		if (k < 0)
 			throw new IllegalArgumentException("Illegal value of k:"+k);
-//		LinkedList<String> res = new LinkedList<String>();
 		
 		int i = firstIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(k)),
 				j = lastIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(k));
-		System.out.println("Prefix: "+prefix +", i: "+i+ ", j: "+j);
+//		System.out.println("Prefix: "+prefix +", i: "+i+ ", j: "+j);
 		if ( i == -1 || j == -1) return new LinkedList<String>();
-//		ArrayList<Term> ret = new ArrayList<Term>();
-//		for (int kk = i; kk <= j; kk++){
-//			ret.add(myTerms[kk]);
-//		}
-//		Collections.sort(ret, new Term.WeightOrder());
-////		for (Term t :ret){
-////			System.out.println(t.getWord());
-////		}
-//		int numResults = Math.min(k, ret.size());
-//		for (int kk = 0; kk < numResults; kk++)
-//			res.addLast(ret.get(kk).getWord());
-//		return res;
-		// maintain pq of size k
 		PriorityQueue<Term> pq = new PriorityQueue<Term>(k, new Term.WeightOrder());
 		for (int index = i; index <= j; index ++) {
 			Term t = myTerms[index];
@@ -189,8 +170,8 @@ public class BinarySearchAutocomplete implements Autocompletor {
 				pq.add(t);
 				} else if (pq.peek().getWeight() < t.getWeight()) {
 					pq.remove();
-					pq.add(t);
-					}
+					pq.add(t);	
+				}
 			}
 		int numResults = Math.min(k, pq.size());
 		LinkedList<String> ret = new LinkedList<String>();
@@ -217,10 +198,11 @@ public class BinarySearchAutocomplete implements Autocompletor {
 		// TODO: Implement topMatch
 		if (prefix == null)
 			throw new NullPointerException("Prefix is null");
-		LinkedList<String> a = (LinkedList<String>) topMatches(prefix, 1);
-//		for (a.iterator())
-//		System.out.println(a.peek());
-		return a.poll();
+		Iterable<String> a = topMatches(prefix, 1);
+		String b = a.toString();
+		if (b.length() == 2)
+			return "";
+		return b.substring(1, b.length() - 1);
 	}
 
 	/**
@@ -228,11 +210,11 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 * return 0.0
 	 */
 	public double weightOf(String term) {
-		// TODO complete weightOf
 		for (Term t : myTerms) {
 			if (t.getWord().equalsIgnoreCase(term))
 				return t.getWeight();
 		}
+		// term is not in dictionary return 0
 		return 0.0;
 	}
 }

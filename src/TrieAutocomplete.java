@@ -189,7 +189,10 @@ public class TrieAutocomplete implements Autocompletor {
 			else 
 				return 0.0;
 		}
-		return current.myWeight;
+		if (current.isWord)
+			return current.myWeight;
+		else 
+			return 0.0;
 	}
 
 	/**
