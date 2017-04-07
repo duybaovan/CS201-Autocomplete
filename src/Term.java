@@ -62,7 +62,7 @@ public class Term implements Comparable<Term> {
 		public int compare(Term v, Term w) {
 			// TODO: Implement compare
 			String a = v.myWord, b = w.myWord;
-			if (a.length() < r)
+			if (a.length() < r && b.length() >= r)
 				b = b.substring(0,0+a.length());
 			if (a.length() >= r ){
 				a = a.substring(0,r);
