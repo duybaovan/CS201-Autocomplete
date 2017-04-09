@@ -156,7 +156,9 @@ public class BinarySearchAutocomplete implements Autocompletor {
 			throw new NullPointerException("Prefix is null");
 		if (k < 0)
 			throw new IllegalArgumentException("Illegal value of k:"+k);
-		
+		if (k == 0)
+		    return new LinkedList<String>();
+		    
 		int i = firstIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(k)),
 				j = lastIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(k));
 //		System.out.println("Prefix: "+prefix +", i: "+i+ ", j: "+j);
