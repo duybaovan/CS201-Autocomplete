@@ -117,40 +117,34 @@ public class TrieAutocomplete implements Autocompletor {
 			throw new NullPointerException("Prefix is null");
 		if (k < 0)
 			throw new IllegalArgumentException("Illegal value of k:"+k);
-		if (k == 0)
+		if (k == 0 || flag == 1)
 		    return new LinkedList<String>();
-		if (flag == 1)
-			return new LinkedList<String>();
+		
 		// maintain pq of size k
 		Node current = myRoot;
 		PriorityQueue<Node> pq = new PriorityQueue<Node>(k, new Node.ReverseSubtreeMaxWeightComparator());
-//		PriorityQueue<Node> pq1 = new PriorityQueue<Node>(k, new Node.ReverseSubtreeMaxWeightComparator());
 		LinkedList<String> L = new LinkedList<String>();
-//		ArrayList<String> L1 = new ArrayList<String>();
 		for (char ch : prefix.toCharArray()){
 			if (current.children.containsKey(ch))
 				current = current.getChild(ch);
 			else return L;
 		}
-
 		pq.add(current);
-//		while (pq.size() > 0 && pq1.size() <= k){
 		while (pq.size() > 0 && L.size() <= k){
 //			System.out.println(pq.size());
 			current = pq.poll();
-			if (current.isWord)
-//				pq1.add(current);
+			if (current.isWord){
 				L.add(current.myWord);
-			if (L.size() == k)
-				break;
+				if (L.size() >= k)
+					break;
+			}
 			for(Node child : current.children.values())
 				pq.add(child);
 		}
 //		int numResults = Math.min(k, pq1.size());
-//		int numResults = Math.min(k, L.size());
-//		Collections.sort(L1, new Node.ReverseSubtreeMaxWeightComparator());
 //		for (int i = 0; i < numResults; i++)
 //			L.addLast(pq1.poll().getWord());
+//		return L;
 		if (L.size() <= k)
 			return L;
 		else return L.subList(0, k);
