@@ -222,18 +222,6 @@ public class BinarySearchAutocomplete implements Autocompletor {
 			}
 		}
 		return word;
-		
-//		System.out.println(prefix);
-//		int i = firstIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(1)),
-//				j = lastIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(1));
-//		System.out.println("Prefix: "+prefix +", i: "+i+ ", j: "+j);
-		
-//		Iterable<String> a = topMatches(prefix, 1);
-//		String b = a.toString();
-////		System.out.println(b);
-//		if (b.length() == 2)
-//			return "";
-//		return b.substring(1, b.length() - 1);
 	}
 
 	/**
