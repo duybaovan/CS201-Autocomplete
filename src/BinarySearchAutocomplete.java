@@ -222,7 +222,7 @@ public class BinarySearchAutocomplete implements Autocompletor {
 		
 		Iterable<String> a = topMatches(prefix, 1);
 		String b = a.toString();
-		System.out.println(b);
+// 		System.out.println(b);
 		if (b.length() == 2)
 			return "";
 		return b.substring(1, b.length() - 1);
