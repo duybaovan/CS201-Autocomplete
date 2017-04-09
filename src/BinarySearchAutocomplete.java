@@ -200,13 +200,13 @@ public class BinarySearchAutocomplete implements Autocompletor {
 		// TODO: Implement topMatch
 		if (prefix == null)
 			throw new NullPointerException("Prefix is null");
-		if (prefix.length() == 0){
-			if (myTerms.length > 0){
-				Arrays.sort(myTerms, new Term.ReverseWeightOrder());
-				return myTerms[0].getWord();
-			} else 
-				return "";
-		}
+// 		if (prefix.length() == 0){
+// 			if (myTerms.length > 0){
+// 				Arrays.sort(myTerms, new Term.ReverseWeightOrder());
+// 				return myTerms[0].getWord();
+// 			} else 
+// 				return "";
+// 		}
 //		if (myTerms.length > 0){
 //			Arrays.sort(myTerms, new Term.PrefixOrder(1));
 //			return myTerms[0].getWord();
