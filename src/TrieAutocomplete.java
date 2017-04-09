@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
@@ -123,28 +124,34 @@ public class TrieAutocomplete implements Autocompletor {
 		// maintain pq of size k
 		Node current = myRoot;
 		PriorityQueue<Node> pq = new PriorityQueue<Node>(k, new Node.ReverseSubtreeMaxWeightComparator());
-		PriorityQueue<Node> pq1 = new PriorityQueue<Node>(k, new Node.ReverseSubtreeMaxWeightComparator());
+//		PriorityQueue<Node> pq1 = new PriorityQueue<Node>(k, new Node.ReverseSubtreeMaxWeightComparator());
 		LinkedList<String> L = new LinkedList<String>();
+//		ArrayList<String> L1 = new ArrayList<String>();
 		for (char ch : prefix.toCharArray()){
 			if (current.children.containsKey(ch))
 				current = current.getChild(ch);
 			else return L;
 		}
-//		System.out.println(current.myInfo);
+
 		pq.add(current);
-		while (pq.size() > 0 && pq1.size() <= k){
+//		while (pq.size() > 0 && pq1.size() <= k){
+		while (pq.size() > 0 && L.size() <= k){			
 //			System.out.println(pq.size());
 			current = pq.poll();
 			if (current.isWord)
-				pq1.add(current);
+//				pq1.add(current);
+				L.add(current.myWord);
 			for(Node child : current.children.values())
 				pq.add(child);
-////			return the first k values of the sorted list L, or all of L if L does not have k values
 		}
-		int numResults = Math.min(k, pq1.size());
-		for (int i = 0; i < numResults; i++)
-			L.addLast(pq1.poll().getWord());
-		return L;
+//		int numResults = Math.min(k, pq1.size());
+		int numResults = Math.min(k, L.size());
+//		Collections.sort(L1, new Node.ReverseSubtreeMaxWeightComparator());
+//		for (int i = 0; i < numResults; i++)
+//			L.addLast(pq1.poll().getWord());
+		if (L.size() <= k)
+			return L;
+		else return L.subList(0, k);
 	}
 
 	/**
