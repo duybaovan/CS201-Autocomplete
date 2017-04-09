@@ -156,7 +156,7 @@ public class BinarySearchAutocomplete implements Autocompletor {
 			throw new NullPointerException("Prefix is null");
 		if (k < 0)
 			throw new IllegalArgumentException("Illegal value of k:"+k);
-		if (k == 0)
+		if (k == 0 || myTerms.length == 0)
 		    return new LinkedList<String>();
 		    
 		int i = firstIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(k)),
@@ -200,6 +200,16 @@ public class BinarySearchAutocomplete implements Autocompletor {
 		// TODO: Implement topMatch
 		if (prefix == null)
 			throw new NullPointerException("Prefix is null");
+		if (prefix.length() == 0){
+			if (myTerms.length > 0){
+				Arrays.sort(myTerms, new Term.ReverseWeightOrder());
+				return myTerms[0].getWord();
+			} else 
+				return "";
+		}
+//		int i = firstIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(1)),
+//				j = lastIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(1));
+//		if ( i == -1 || j == -1) return "";
 		Iterable<String> a = topMatches(prefix, 1);
 		String b = a.toString();
 		if (b.length() == 2)
