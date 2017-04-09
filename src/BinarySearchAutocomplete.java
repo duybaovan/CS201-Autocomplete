@@ -63,8 +63,6 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 */
 	public static int firstIndexOf(Term[] a, Term key, Comparator<Term> comparator) {
 		// TODO: Implement firstIndexOf
-		if (a.length == 0)
-			return -1;
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		int low = -1, high = a.length-1, mid;		
 		while (high - low > 1){
@@ -106,8 +104,6 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 */
 	public static int lastIndexOf(Term[] a, Term key, Comparator<Term> comparator) {
 		// TODO: Implement lastIndexOf
-		if (a.length == 0)
-			return -1;
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		int low = -1, high = a.length-1, mid;		
 		while (high - low > 1){
@@ -211,11 +207,22 @@ public class BinarySearchAutocomplete implements Autocompletor {
 			} else 
 				return "";
 		}
+//		if (myTerms.length > 0){
+//			Arrays.sort(myTerms, new Term.PrefixOrder(1));
+//			return myTerms[0].getWord();
+//		} else 
+//			return "";
 //		int i = firstIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(1)),
 //				j = lastIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(1));
 //		if ( i == -1 || j == -1) return "";
+//		System.out.println(prefix);
+//		int i = firstIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(1)),
+//				j = lastIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(1));
+//		System.out.println("Prefix: "+prefix +", i: "+i+ ", j: "+j);
+		
 		Iterable<String> a = topMatches(prefix, 1);
 		String b = a.toString();
+		System.out.println(b);
 		if (b.length() == 2)
 			return "";
 		return b.substring(1, b.length() - 1);
