@@ -200,33 +200,40 @@ public class BinarySearchAutocomplete implements Autocompletor {
 		// TODO: Implement topMatch
 		if (prefix == null)
 			throw new NullPointerException("Prefix is null");
+		int i, j;
+		double max;
+		String word = "";
+		if (myTerms.length == 0)
+			return "";
 		if (prefix.length() == 0){
-			if (myTerms.length > 0){
-				Arrays.sort(myTerms, new Term.ReverseWeightOrder());
-				return myTerms[0].getWord();
-			} else 
-				return "";
+			i = 0;
+			j = myTerms.length;
 		}
-		Arrays.sort(myTerms);
-//		if (myTerms.length > 0){
-//			Arrays.sort(myTerms, new Term.PrefixOrder(1));
-//			return myTerms[0].getWord();
-//		} else 
-//			return "";
-//		int i = firstIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(1)),
-//				j = lastIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(1));
-//		if ( i == -1 || j == -1) return "";
+		i = firstIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(prefix.length()));
+		j = lastIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(prefix.length()));
+		
+		if ( i == -1 || j == -1) return "";
+		word = myTerms[i].getWord();
+		max = myTerms[i].getWeight();	
+		for (int k = i; k <= j; k++) {
+			if (max < myTerms[k].getWeight()){
+				word = myTerms[k].getWord();
+				max = myTerms[k].getWeight();
+			}
+		}
+		return word;
+		
 //		System.out.println(prefix);
 //		int i = firstIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(1)),
 //				j = lastIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(1));
 //		System.out.println("Prefix: "+prefix +", i: "+i+ ", j: "+j);
 		
-		Iterable<String> a = topMatches(prefix, 1);
-		String b = a.toString();
-// 		System.out.println(b);
-		if (b.length() == 2)
-			return "";
-		return b.substring(1, b.length() - 1);
+//		Iterable<String> a = topMatches(prefix, 1);
+//		String b = a.toString();
+////		System.out.println(b);
+//		if (b.length() == 2)
+//			return "";
+//		return b.substring(1, b.length() - 1);
 	}
 
 	/**
