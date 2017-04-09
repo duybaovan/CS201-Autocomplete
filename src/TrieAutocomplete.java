@@ -15,6 +15,7 @@ public class TrieAutocomplete implements Autocompletor {
 	 * Root of entire trie
 	 */
 	protected Node myRoot;
+	private int flag = 0;
 
 	/**
 	 * Constructor method for TrieAutocomplete. Should initialize the trie
@@ -47,6 +48,8 @@ public class TrieAutocomplete implements Autocompletor {
 		}
 		if (words.size() != terms.length)
 			throw new IllegalArgumentException("Duplicate input terms");
+		if (terms.length == 0)
+			flag = 1;
 	}
 
 	/**
@@ -115,6 +118,8 @@ public class TrieAutocomplete implements Autocompletor {
 			throw new IllegalArgumentException("Illegal value of k:"+k);
 		if (k == 0)
 		    return new LinkedList<String>();
+		if (flag == 1)
+			return new LinkedList<String>();
 		// maintain pq of size k
 		Node current = myRoot;
 		PriorityQueue<Node> pq = new PriorityQueue<Node>(k, new Node.ReverseSubtreeMaxWeightComparator());
