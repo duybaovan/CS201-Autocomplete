@@ -113,6 +113,8 @@ public class TrieAutocomplete implements Autocompletor {
 			throw new NullPointerException("Prefix is null");
 		if (k < 0)
 			throw new IllegalArgumentException("Illegal value of k:"+k);
+		if (k == 0)
+		    return new LinkedList<String>();
 		// maintain pq of size k
 		Node current = myRoot;
 		PriorityQueue<Node> pq = new PriorityQueue<Node>(k, new Node.ReverseSubtreeMaxWeightComparator());
