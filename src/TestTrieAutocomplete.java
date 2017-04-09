@@ -1,160 +1,229 @@
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.PriorityQueue;
 
-import org.junit.Test;
+/**
+ * General trie/priority queue algorithm for implementing Autocompletor
+ * 
+ * @author Austin Lu
+ * @author Jeff Forbes
+ */
+public class TrieAutocomplete implements Autocompletor {
 
-public class TestTrieAutocomplete {
-
-	Term[] terms =
-			new Term[] {new Term("ape", 6), 
-			new Term("app", 4), 
-			new Term("ban", 2),
-			new Term("bat", 3),
-			new Term("bee", 5),
-			new Term("car", 7),
-			new Term("cat", 1)};
-	String[] names= {"ape", "app", "ban", "bat", "bee", "car", "cat"};
-	double[] weights = {6, 4, 2, 3, 5, 7, 1};
-
-	public Autocompletor getInstance(){
-		return getInstance(names, weights);
-	}
-
-	public Autocompletor getInstance(String[] names, double[] weights){
-		return new TrieAutocomplete(names, weights);
-	}
-
-	public class Autoincompletor extends TrieAutocomplete{
-
-		public Autoincompletor(String[] terms, double[] weights) {
-			super(terms, weights);
-		}
-
-		@Override
-		public Iterable<String> topMatches(String prefix, int k){
-			return new LinkedList<String>();
-		}
-
-	}
-
-	public ArrayList<ArrayList<Term>> allPermutes(ArrayList<Term> arr){
-		if (arr.size() == 1){
-			ArrayList<ArrayList<Term>> output = new
-					ArrayList<ArrayList<Term>>();
-			output.add(arr);
-			return output;
-		}
-		ArrayList<ArrayList<Term>> output = 
-				new ArrayList<ArrayList<Term>>();
-		for(int i = 0; i < arr.size(); i++){
-			ArrayList<Term> arrcopy = new ArrayList<Term>(arr);
-			arrcopy.remove(i);
-			ArrayList<ArrayList<Term>> subPermutes = allPermutes(arrcopy);
-			for(ArrayList<Term> permute: subPermutes)
-				permute.add(arr.get(i));
-			output.addAll(subPermutes);
-		}
-		return output;
-	}
-	
-
-	/**Tests correctness of topMatch() for a few simple cases
+	/**
+	 * Root of entire trie
 	 */
-	@Test(timeout = 10000)
-	public void testTopMatch() {
-		Autocompletor test = getInstance();
-		String[] queries = {"", "a", "ap", "b", "ba", "c", "ca", "cat", "d", " "};
-		String[] results = {"car", "ape", "ape", "bee", "bat", "car", "car", "cat", "", ""};
-		for(int i = 0; i < queries.length; i++){
-			String query = queries[i];
-			String reported = test.topMatch(query);
-			String actual = results[i];
-			assertEquals("wrong top match for "+query, actual, reported);
-		}
-	}
+	protected Node myRoot;
+	private int flag = 0;
 
-	private String[] iterToArr(Iterable<String> it) {
-		ArrayList<String> list = new ArrayList<String>();
-		for (String s: it)
-			list.add(s);
-		return list.toArray(new String[0]);
-	}
-
-	/**Tests correctness of topKMatches() for a few simple cases
+	/**
+	 * Constructor method for TrieAutocomplete. Should initialize the trie
+	 * rooted at myRoot, as well as add all nodes necessary to represent the
+	 * words in terms.
+	 * 
+	 * @param terms
+	 *            - The words we will autocomplete from
+	 * @param weights
+	 *            - Their weights, such that terms[i] has weight weights[i].
+	 * @throws NullPointerException
+	 *             if either argument is null
+	 * @throws IllegalArgumentException
+	 *             if terms and weights are different weight
 	 */
-	@Test(timeout = 10000)
-	public void testTopKMatches() {
-		Autocompletor test = getInstance();
-		String[] queries = {"", "", "", "", "a", "ap", "b", "ba", "d"};
-		int[] ks = {8, 1, 2, 3, 1, 1, 2, 2, 100};
-		String[][] results = {
-				{"car", "ape", "bee", "app", "bat", "ban", "cat"},
-				{"car"}, 
-				{"car", "ape"}, 
-				{"car", "ape", "bee"}, 
-				{"ape"}, 
-				{"ape"},
-				{"bee", "bat"},
-				{"bat", "ban"},
-				{}
-		};
-		for(int i = 0; i < queries.length; i++){
-			String query = queries[i];
-			String[] reported = iterToArr(test.topMatches(query, ks[i]));
-			String[] actual = results[i];
-			assertArrayEquals("wrong top matches for "+query+" "+ks[i],
-					actual, reported);
+	public TrieAutocomplete(String[] terms, double[] weights) {
+		if (terms == null || weights == null)
+			throw new NullPointerException("One or more arguments null");
+		if (terms.length != weights.length)
+			throw new IllegalArgumentException("terms and weights are not the same length");
+		HashSet<String> words = new HashSet<String>();
+		// Represent the root as a dummy/placeholder node
+		myRoot = new Node('-', null, 0);
+
+		for (int i = 0; i < terms.length; i++) {
+			if (words.contains(terms[i]))
+				throw new IllegalArgumentException("Duplicate input terms " + terms[i]);
+			words.add(terms[i]);
+			add(terms[i], weights[i]);
 		}
+		if (words.size() != terms.length)
+			throw new IllegalArgumentException("Duplicate input terms");
+		if (terms.length == 0)
+			flag = 1;
 	}
 
 	/**
-	 * A more rigorous testing of Trie, to make sure add works.
-	 * The Trie should be constructed the same regardless of the order
-	 * words are added to the Trie, which means topMatch should return
-	 * the same output regardless of what order they are added in.
+	 * Add the word with given weight to the trie. If word already exists in the
+	 * trie, no new nodes should be created, but the weight of word should be
+	 * updated.
 	 * 
-	 * So, we compute all orders to add the elements, add words to the trie
-	 * in those orders, and then call topMatch on a fixed series of inputs.
-	 * We keep a set of the list of outputs - if the set size goes past 1,
-	 * then two different add orders produced two different tries
-	 * and thus two different outputs, so add is not working.
+	 * In adding a word, this method should do the following: Create any
+	 * necessary intermediate nodes if they do not exist. Update the
+	 * subtreeMaxWeight of all nodes in the path from root to the node
+	 * representing word. Set the value of myWord, myWeight, isWord, and
+	 * mySubtreeMaxWeight of the node corresponding to the added word to the
+	 * correct values
+	 * 
+	 * @throws a
+	 *             NullPointerException if word is null
+	 * @throws an
+	 *             IllegalArgumentException if weight is negative.
 	 */
-	@Test(timeout = 10000)
-	public void testAdd() {
-		ArrayList<Term> termList = new ArrayList<Term>();
-		Term[] terms =
-				new Term[] {new Term("ape", 6), 
-				new Term("app", 4), 
-				new Term("ban", 2),
-				new Term("bat", 3),
-				new Term("bee", 5),
-				new Term("car", 7),
-				new Term("cat", 1)};
-		String[] queries = {"", "a", "ap", "ape", "app", "b", "ba", "ban", 
-				"bat", "be", "bee",	"c", "ca", "car", "cat", "f"};
-		for(Term t: terms)
-			termList.add(t);
-		ArrayList<ArrayList<Term>> orders = allPermutes(termList);
-		HashSet<ArrayList<String>> outputs = 
-				new HashSet<ArrayList<String>>();
-		for(ArrayList<Term> order: orders){
-			String[] names = new String[order.size()];
-			double[] weights = new double[order.size()];
-			for(int i = 0; i < order.size(); i++){
-				names[i] = order.get(i).getWord();
-				weights[i] = order.get(i).getWeight();
-			}
-			TrieAutocomplete auto = new TrieAutocomplete(names, weights);
-			ArrayList<String> output = new ArrayList<String>();
-			for(String query: queries){
-				output.add(auto.topMatch(query));
-			}
-			outputs.add(output);
-			assertTrue("results depend on add order",
-					outputs.size() <= 1);
+	private void add(String word, double weight) {
+		// TODO: Implement add
+		// Find the node (Creating the new Nodes where necessary) for word
+		if (word == null)
+			throw new NullPointerException("Word is null " + word);
+		if (weight < 0)
+			throw new IllegalArgumentException("Negative weight "+ weight);
+		Node current = myRoot;
+		for (char ch:word.toCharArray()){
+			if (current.mySubtreeMaxWeight < weight)
+				current.mySubtreeMaxWeight = weight;
+			if (!current.children.containsKey(ch))
+				current.children.put(ch, new Node(ch, current, weight));		
+			current = current.getChild(ch);
 		}
+		current.setWeight(weight);
+		current.isWord = true;
+		current.setWord(word);
+//		System.out.println(word + ": " + weight);
+	}
+
+	/**
+	 * Required by the Autocompletor interface. Returns an array containing the
+	 * k words in the trie with the largest weight which match the given prefix,
+	 * in descending weight order. If less than k words exist matching the given
+	 * prefix (including if no words exist), then the array instead contains all
+	 * those words. e.g. If terms is {air:3, bat:2, bell:4, boy:1}, then
+	 * topKMatches("b", 2) should return {"bell", "bat"}, but topKMatches("a",
+	 * 2) should return {"air"}
+	 * 
+	 * @param prefix
+	 *            - A prefix which all returned words must start with
+	 * @param k
+	 *            - The (maximum) number of words to be returned
+	 * @return An Iterable of the k words with the largest weights among all
+	 *         words starting with prefix, in descending weight order. If less
+	 *         than k such words exist, return all those words. If no such words
+	 *         exist, return an empty Iterable
+	 * @throws a
+	 *             NullPointerException if prefix is null
+	 */
+	public Iterable<String> topMatches(String prefix, int k) {
+		// TODO: Implement topKMatches
+		if (prefix == null)
+			throw new NullPointerException("Prefix is null");
+		if (k < 0)
+			throw new IllegalArgumentException("Illegal value of k:"+k);
+		if (k == 0)
+		    return new LinkedList<String>();
+		if (flag == 1)
+			return new LinkedList<String>();
+		// maintain pq of size k
+		Node current = myRoot;
+		PriorityQueue<Node> pq = new PriorityQueue<Node>(k, new Node.ReverseSubtreeMaxWeightComparator());
+//		PriorityQueue<Node> pq1 = new PriorityQueue<Node>(k, new Node.ReverseSubtreeMaxWeightComparator());
+		LinkedList<String> L = new LinkedList<String>();
+//		ArrayList<String> L1 = new ArrayList<String>();
+		for (char ch : prefix.toCharArray()){
+			if (current.children.containsKey(ch))
+				current = current.getChild(ch);
+			else return L;
+		}
+
+		pq.add(current);
+//		while (pq.size() > 0 && pq1.size() <= k){
+		while (pq.size() > 0 && L.size() <= k){
+//			System.out.println(pq.size());
+			current = pq.poll();
+			if (current.isWord)
+//				pq1.add(current);
+				L.add(current.myWord);
+			if (L.size() == k)
+				break;
+			for(Node child : current.children.values())
+				pq.add(child);
+		}
+//		int numResults = Math.min(k, pq1.size());
+//		int numResults = Math.min(k, L.size());
+//		Collections.sort(L1, new Node.ReverseSubtreeMaxWeightComparator());
+//		for (int i = 0; i < numResults; i++)
+//			L.addLast(pq1.poll().getWord());
+		if (L.size() <= k)
+			return L;
+		else return L.subList(0, k);
+	}
+
+	/**
+	 * Given a prefix, returns the largest-weight word in the trie starting with
+	 * that prefix.
+	 * 
+	 * @param prefix
+	 *            - the prefix the returned word should start with
+	 * @return The word from with the largest weight starting with prefix, or an
+	 *         empty string if none exists
+	 * @throws a
+	 *             NullPointerException if the prefix is null
+	 */
+	public String topMatch(String prefix) {
+		// TODO: Implement topMatch
+		if (prefix == null)
+			throw new NullPointerException("Prefix is null " + prefix);
+		Node current = myRoot;
+		for (char ch:prefix.toCharArray()){
+			if (current.children.containsKey(ch))
+				current = current.getChild(ch);
+			else 
+				return "";
+		}
+		double max = current.mySubtreeMaxWeight;
+//		System.out.println(current.myInfo+max+max2);
+		if (current.myWeight == max)
+			return current.myWord;
+		while(current.myWeight != max){
+			for (Node child : current.children.values())
+				if(child.mySubtreeMaxWeight == max){
+					current = child;
+					break;			
+				}
+		}
+		return current.myWord;
+	}
+
+	/**
+	 * Return the weight of a given term. If term is not in the dictionary,
+	 * return 0.0
+	 */
+	public double weightOf(String prefix) {
+		// TODO complete weightOf
+		Node current = myRoot;
+		for (char ch:prefix.toCharArray()){
+			if (current.children.containsKey(ch))
+				current = current.getChild(ch);
+			else 
+				return 0.0;
+		}
+		if (current.isWord)
+			return current.myWeight;
+		else 
+			return 0.0;
+	}
+
+	/**
+	 * Optional: Returns the highest weighted matches within k edit distance of
+	 * the word. If the word is in the dictionary, then return an empty list.
+	 * 
+	 * @param word
+	 *            The word to spell-check
+	 * @param dist
+	 *            Maximum edit distance to search
+	 * @param k
+	 *            Number of results to return
+	 * @return Iterable in descending weight order of the matches
+	 */
+	public Iterable<String> spellCheck(String word, int dist, int k) {
+		return null;
 	}
 }
