@@ -63,6 +63,8 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 */
 	public static int firstIndexOf(Term[] a, Term key, Comparator<Term> comparator) {
 		// TODO: Implement firstIndexOf
+		if (a.length == 0)
+			return -1;
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		int low = -1, high = a.length-1, mid;		
 		while (high - low > 1){
@@ -104,6 +106,8 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 */
 	public static int lastIndexOf(Term[] a, Term key, Comparator<Term> comparator) {
 		// TODO: Implement lastIndexOf
+		if (a.length == 0)
+			return -1;
 		ArrayList<Integer> list = new ArrayList<Integer>();
 		int low = -1, high = a.length-1, mid;		
 		while (high - low > 1){
