@@ -1,7 +1,7 @@
 Name: Peifan Liu
 NetID: pl112
 Hours Spent: 12.0
-Consulted With: Discussion TA
+Consulted With: Discussion TA, Jieren Xu
 Resources Used: Discussion guide, ppt, class slides. 
 Impressions: A little bit difficult.
 ----------------------------------------------------------------------
@@ -10,18 +10,34 @@ Problem 1: What is the order of growth (big-Oh) of the number of compares
 type make, as a function of the number of terms N, the number of matching
 terms M, and k, the number of matches returned by topKMatches for
 BinarySearchAutocomplete?
+	
+	In the BinarySearchAutocomplete:
+	Constructor: O(N).
+	firstIndexOf and lastIndexOf: O(log N) comparisons between different Term objects.
+	topMatches: O(log N) comparisons between different Term objects (invoking first/last index),
+				O(M) comparisons of pq.size() and pq.peek().getWeight().
+				O(k) comparisons to create the return value. (LinkedList)
+	topMatch: O(log N) comparisons between different Term objects (invoking first/last index),
+			  O(M) comparisons between weights of Terms.
+	weightOf: O(N) comparisons between strings.
+	 
 
 Problem 2: How does the runtime of topKMatches() vary with k, assuming a fixed prefix
 and set of terms? 
-2A BruteAutocomplete:
-2B BinarySearchAutocomplete:
-2C TrieAutocomplete:
+2A BruteAutocomplete: Smaller k means the loop can be broken with lower iterations, and reduce the runtime. But generally, it has little difference. O(N)
+2B BinarySearchAutocomplete: With k increasing, runtime decreases.
+2C TrieAutocomplete: With k increasing, runtime decreases.
 
 Problem 3: Look at the methods topMatch and topKMatches in BruteAutocomplete and
 BinarySearchAutocomplete and compare both their theoretical and empirical
 runtimes. Is BinarySearchAutocomplete always guaranteed to perform better
 than BruteAutocomplete? Justify your answer.
 
+	Theoretical			topMatch			topMatches
+	Brute				O(N)				O(N + k)
+	Binary				O(logN + M)			O(logN + M + k)
+	As we can see from the experiments(data provided below), the results satisfy our expectations.
+	
 	No. BinarySearchAutocomplete perform worse than BruteAutocomplete if Prefix is "", 
 	since the first index in BinarySearch is 0, and last index is the length of myTerms, 
 	so this method will still go through the whole array, but it needs extra time for 
@@ -30,10 +46,83 @@ than BruteAutocomplete? Justify your answer.
 Problem 4: For all three of the Autocompletor implementations, how does increasing the
 size of the source and increasing the size of the prefix argument affect
 the runtime of topMatch and topKMatches? 
-4A BruteAutocomplete:
-4B BinarySearchAutocomplete:
-4C TrieAutocomplete:
+							Increase size of source					Increase size of prefix
+4A BruteAutocomplete:		runtime increases						almost keeps unchanged
+4B BinarySearchAutocomplete: runtime increases						runtime decreases
+4C TrieAutocomplete:		almost keeps unchanged					runtime decreases
 
+----------------------------------------------------------------------------------
+Benchmarking BruteAutocomplete...
+Found 10 words
+Time to initialize - 0.001351506
+Time for topMatch("") - 1.86987E-6
+Time for topMatch("february 2.0") - 3.74615E-7
+Time for topMatch("f") - 3.42666E-7
+Time for topMatch("fe") - 3.43478E-7
+Time for topMatch("notarealword") - 3.60123E-7
+Time for topKMatches("", 1) -  1.1988793E-5
+Time for topKMatches("", 4) -  1.217627E-6
+Time for topKMatches("", 7) -  1.033882E-6
+Time for topKMatches("february 2.0", 1) -  4.83818E-7
+Time for topKMatches("february 2.0", 4) -  6.2067E-7
+Time for topKMatches("february 2.0", 7) -  4.49622E-7
+Time for topKMatches("f", 1) -  4.56885E-7
+Time for topKMatches("f", 4) -  4.5651E-7
+Time for topKMatches("f", 7) -  4.48258E-7
+Time for topKMatches("fe", 1) -  4.5094E-7
+Time for topKMatches("fe", 4) -  4.49302E-7
+Time for topKMatches("fe", 7) -  4.40545E-7
+Time for topKMatches("notarealword", 1) -  3.60301E-7
+Time for topKMatches("notarealword", 4) -  3.56308E-7
+Time for topKMatches("notarealword", 7) -  3.59055E-7
+
+Benchmarking BruteAutocomplete...
+Found 1000 words
+Time to initialize - 0.002366687
+Time for topMatch("") - 1.2423058E-5
+Time for topMatch("mccormick") - 8.656972E-6
+Time for topMatch("m") - 1.341389E-6
+Time for topMatch("mc") - 2.198047E-6
+Time for topMatch("notarealword") - 4.694381E-6
+Time for topKMatches("", 1) -  3.8088807E-5
+Time for topKMatches("", 4) -  2.6859861E-5
+Time for topKMatches("", 7) -  1.3083315E-5
+Time for topKMatches("mccormick", 1) -  1.8817543E-5
+Time for topKMatches("mccormick", 4) -  1.7179463E-5
+Time for topKMatches("mccormick", 7) -  1.8774021E-5
+Time for topKMatches("m", 1) -  1.4912552E-5
+Time for topKMatches("m", 4) -  5.458117E-6
+Time for topKMatches("m", 7) -  5.042295E-6
+Time for topKMatches("mc", 1) -  5.001624E-6
+Time for topKMatches("mc", 4) -  5.836201E-6
+Time for topKMatches("mc", 7) -  5.230332E-6
+Time for topKMatches("notarealword", 1) -  3.902071E-6
+Time for topKMatches("notarealword", 4) -  4.046111E-6
+Time for topKMatches("notarealword", 7) -  4.71287E-6
+
+Benchmarking BruteAutocomplete...
+Found 31109 words
+Time to initialize - 0.015877756
+Time for topMatch("") - 6.328041E-5
+Time for topMatch("vinny") - 1.03105402E-4
+Time for topMatch("v") - 4.4357084E-5
+Time for topMatch("vi") - 4.4766217E-5
+Time for topMatch("notarealword") - 5.21867588E-4
+Time for topKMatches("", 1) -  8.10819513E-4
+Time for topKMatches("", 4) -  5.33260722E-4
+Time for topKMatches("", 7) -  7.16568303E-4
+Time for topKMatches("vinny", 1) -  9.4631257E-4
+Time for topKMatches("vinny", 4) -  5.15473605E-4
+Time for topKMatches("vinny", 7) -  5.12363743E-4
+Time for topKMatches("v", 1) -  4.34059251E-4
+Time for topKMatches("v", 4) -  7.81078936E-4
+Time for topKMatches("v", 7) -  7.35167128E-4
+Time for topKMatches("vi", 1) -  5.19025855E-4
+Time for topKMatches("vi", 4) -  4.70932055E-4
+Time for topKMatches("vi", 7) -  4.73312701E-4
+Time for topKMatches("notarealword", 1) -  4.56610811E-4
+Time for topKMatches("notarealword", 4) -  4.21504669E-4
+Time for topKMatches("notarealword", 7) -  4.13830839E-4
 
 Benchmarking BruteAutocomplete...
 Found 333333 words
@@ -59,6 +148,78 @@ Time for topKMatches("notarealword", 1) -  0.003077106858
 Time for topKMatches("notarealword", 4) -  0.003004661555
 Time for topKMatches("notarealword", 7) -  0.00304646802
 
+-----------------------------------------------------------------------------------
+Benchmarking BinarySearchAutocomplete...
+Found 10 words
+Time to initialize - 0.003546254
+Time for topMatch("") - 6.624545E-6
+Time for topMatch("february 2.0") - 3.323714E-6
+Time for topMatch("f") - 3.754817E-6
+Time for topMatch("fe") - 3.147292E-6
+Time for topMatch("notarealword") - 2.472453E-6
+Time for topKMatches("", 1) -  1.415913E-5
+Time for topKMatches("", 4) -  1.221028E-6
+Time for topKMatches("", 7) -  1.13828E-6
+Time for topKMatches("february 2.0", 1) -  5.40261E-7
+Time for topKMatches("february 2.0", 4) -  4.87816E-7
+Time for topKMatches("february 2.0", 7) -  4.83106E-7
+Time for topKMatches("f", 1) -  6.64758E-7
+Time for topKMatches("f", 4) -  6.28729E-7
+Time for topKMatches("f", 7) -  6.42945E-7
+Time for topKMatches("fe", 1) -  1.04396E-6
+Time for topKMatches("fe", 4) -  9.05102E-7
+Time for topKMatches("fe", 7) -  9.41956E-7
+Time for topKMatches("notarealword", 1) -  4.66317E-7
+Time for topKMatches("notarealword", 4) -  5.066E-7
+Time for topKMatches("notarealword", 7) -  4.72319E-7
+
+Benchmarking BinarySearchAutocomplete...
+Found 1000 words
+Time to initialize - 0.003307931
+Time for topMatch("") - 1.7242239E-5
+Time for topMatch("mccormick") - 2.320637E-6
+Time for topMatch("m") - 3.395141E-6
+Time for topMatch("mc") - 1.87265E-6
+Time for topMatch("notarealword") - 1.156941E-6
+Time for topKMatches("", 1) -  3.8403295E-5
+Time for topKMatches("", 4) -  1.7676406E-5
+Time for topKMatches("", 7) -  1.7246706E-5
+Time for topKMatches("mccormick", 1) -  8.59569E-7
+Time for topKMatches("mccormick", 4) -  9.05143E-7
+Time for topKMatches("mccormick", 7) -  1.000842E-6
+Time for topKMatches("m", 1) -  2.620796E-6
+Time for topKMatches("m", 4) -  2.530796E-6
+Time for topKMatches("m", 7) -  2.668526E-6
+Time for topKMatches("mc", 1) -  1.199371E-6
+Time for topKMatches("mc", 4) -  1.202975E-6
+Time for topKMatches("mc", 7) -  1.239234E-6
+Time for topKMatches("notarealword", 1) -  1.092789E-6
+Time for topKMatches("notarealword", 4) -  9.06254E-7
+Time for topKMatches("notarealword", 7) -  7.56236E-7
+
+Benchmarking BinarySearchAutocomplete...
+Found 31109 words
+Time to initialize - 0.037058827
+Time for topMatch("") - 4.5095518E-5
+Time for topMatch("vinny") - 2.820489E-6
+Time for topMatch("v") - 3.389797E-6
+Time for topMatch("vi") - 2.856349E-6
+Time for topMatch("notarealword") - 1.50905E-6
+Time for topKMatches("", 1) -  1.89521051E-4
+Time for topKMatches("", 4) -  1.07647672E-4
+Time for topKMatches("", 7) -  9.8265015E-5
+Time for topKMatches("vinny", 1) -  1.34019E-6
+Time for topKMatches("vinny", 4) -  7.53389E-7
+Time for topKMatches("vinny", 7) -  8.11147E-7
+Time for topKMatches("v", 1) -  2.511653E-6
+Time for topKMatches("v", 4) -  2.489288E-6
+Time for topKMatches("v", 7) -  2.69347E-6
+Time for topKMatches("vi", 1) -  1.7969E-6
+Time for topKMatches("vi", 4) -  1.871578E-6
+Time for topKMatches("vi", 7) -  2.299001E-6
+Time for topKMatches("notarealword", 1) -  2.793856E-6
+Time for topKMatches("notarealword", 4) -  1.352953E-6
+Time for topKMatches("notarealword", 7) -  8.27377E-7
 
 Benchmarking BinarySearchAutocomplete...
 Found 333333 words
@@ -84,31 +245,107 @@ Time for topKMatches("notarealword", 1) -  2.462761E-6
 Time for topKMatches("notarealword", 4) -  2.346651E-6
 Time for topKMatches("notarealword", 7) -  2.436947E-6
 
+-------------------------------------------------------------------------------
+Benchmarking TrieAutocomplete...
+Found 10 words
+Time to initialize - 0.001038955
+Created 89 nodes
+Time for topMatch("") - 4.832752E-6
+Time for topMatch("february 2.0") - 4.473873E-6
+Time for topMatch("f") - 1.52605E-6
+Time for topMatch("fe") - 1.129262E-6
+Time for topMatch("notarealword") - 1.20942E-7
+Time for topKMatches("", 1) -  2.3672925E-5
+Time for topKMatches("", 4) -  2.693058E-6
+Time for topKMatches("", 7) -  2.406834E-6
+Time for topKMatches("february 2.0", 1) -  6.37707E-7
+Time for topKMatches("february 2.0", 4) -  5.76456E-7
+Time for topKMatches("february 2.0", 7) -  3.930935E-6
+Time for topKMatches("f", 1) -  1.734382E-6
+Time for topKMatches("f", 4) -  1.351544E-6
+Time for topKMatches("f", 7) -  1.12471E-6
+Time for topKMatches("fe", 1) -  1.063533E-6
+Time for topKMatches("fe", 4) -  1.05527E-6
+Time for topKMatches("fe", 7) -  1.005616E-6
+Time for topKMatches("notarealword", 1) -  3.24007E-7
+Time for topKMatches("notarealword", 4) -  2.81308E-7
+Time for topKMatches("notarealword", 7) -  1.7572E-7
+
+Benchmarking TrieAutocomplete...
+Found 1000 words
+Time to initialize - 0.010394203
+Created 10737 nodes
+Time for topMatch("") - 4.600047E-6
+Time for topMatch("mccormick") - 4.13021E-7
+Time for topMatch("m") - 4.99351E-7
+Time for topMatch("mc") - 6.80014E-7
+Time for topMatch("notarealword") - 1.78942E-7
+Time for topKMatches("", 1) -  1.9471885E-5
+Time for topKMatches("", 4) -  8.876079E-6
+Time for topKMatches("", 7) -  8.581031E-6
+Time for topKMatches("mccormick", 1) -  6.87719E-7
+Time for topKMatches("mccormick", 4) -  5.02903E-7
+Time for topKMatches("mccormick", 7) -  5.7343E-7
+Time for topKMatches("m", 1) -  3.828535E-6
+Time for topKMatches("m", 4) -  3.790594E-6
+Time for topKMatches("m", 7) -  4.076426E-6
+Time for topKMatches("mc", 1) -  2.966731E-6
+Time for topKMatches("mc", 4) -  2.393383E-6
+Time for topKMatches("mc", 7) -  2.310097E-6
+Time for topKMatches("notarealword", 1) -  2.3227E-7
+Time for topKMatches("notarealword", 4) -  2.31593E-7
+Time for topKMatches("notarealword", 7) -  2.27614E-7
+
+
+Benchmarking TrieAutocomplete...
+Found 31109 words
+Time to initialize - 0.049732121
+Created 61873 nodes
+Time for topMatch("") - 2.127804E-6
+Time for topMatch("vinny") - 2.65276E-7
+Time for topMatch("v") - 6.06542E-7
+Time for topMatch("vi") - 4.83892E-7
+Time for topMatch("notarealword") - 1.78961E-7
+Time for topKMatches("", 1) -  1.2291395E-5
+Time for topKMatches("", 4) -  5.764534E-6
+Time for topKMatches("", 7) -  5.607275E-6
+Time for topKMatches("vinny", 1) -  4.06333E-7
+Time for topKMatches("vinny", 4) -  3.76438E-7
+Time for topKMatches("vinny", 7) -  3.83871E-7
+Time for topKMatches("v", 1) -  4.007353E-6
+Time for topKMatches("v", 4) -  2.576604E-6
+Time for topKMatches("v", 7) -  2.366405E-6
+Time for topKMatches("vi", 1) -  1.900208E-6
+Time for topKMatches("vi", 4) -  1.822915E-6
+Time for topKMatches("vi", 7) -  1.742409E-6
+Time for topKMatches("notarealword", 1) -  2.30976E-7
+Time for topKMatches("notarealword", 4) -  2.26899E-7
+Time for topKMatches("notarealword", 7) -  2.47521E-7
+
 Benchmarking TrieAutocomplete...
 Found 333333 words
-Time to initialize - 0.346262271
+Time to initialize - 0.458431641
 Created 805917 nodes
-Time for topMatch("") - 1.743299E-6
-Time for topMatch("khombu") - 3.35648E-7
-Time for topMatch("k") - 8.66414E-7
-Time for topMatch("kh") - 3.85434E-7
-Time for topMatch("notarealword") - 2.64879E-7
-Time for topKMatches("", 1) -  9.856207E-6
-Time for topKMatches("", 4) -  2.541886E-6
-Time for topKMatches("", 7) -  2.513893E-6
-Time for topKMatches("khombu", 1) -  3.47527E-7
-Time for topKMatches("khombu", 4) -  3.12958E-7
-Time for topKMatches("khombu", 7) -  3.16844E-7
-Time for topKMatches("k", 1) -  1.629832E-6
-Time for topKMatches("k", 4) -  1.506115E-6
-Time for topKMatches("k", 7) -  1.467053E-6
-Time for topKMatches("kh", 1) -  1.429433E-6
-Time for topKMatches("kh", 4) -  1.388664E-6
-Time for topKMatches("kh", 7) -  1.406499E-6
-Time for topKMatches("notarealword", 1) -  2.61403E-7
-Time for topKMatches("notarealword", 4) -  2.31902E-7
-Time for topKMatches("notarealword", 7) -  2.35179E-7
-
+Time for topMatch("") - 1.91234E-6
+Time for topMatch("khombu") - 3.60591E-7
+Time for topMatch("k") - 8.59442E-7
+Time for topMatch("kh") - 3.80709E-7
+Time for topMatch("notarealword") - 2.73696E-7
+Time for topKMatches("", 1) -  9.834841E-6
+Time for topKMatches("", 4) -  2.550502E-6
+Time for topKMatches("", 7) -  2.512676E-6
+Time for topKMatches("khombu", 1) -  3.36607E-7
+Time for topKMatches("khombu", 4) -  3.14433E-7
+Time for topKMatches("khombu", 7) -  3.13917E-7
+Time for topKMatches("k", 1) -  1.591476E-6
+Time for topKMatches("k", 4) -  1.512592E-6
+Time for topKMatches("k", 7) -  1.449048E-6
+Time for topKMatches("kh", 1) -  1.405438E-6
+Time for topKMatches("kh", 4) -  1.415814E-6
+Time for topKMatches("kh", 7) -  1.364206E-6
+Time for topKMatches("notarealword", 1) -  2.53546E-7
+Time for topKMatches("notarealword", 4) -  2.41418E-7
+Time for topKMatches("notarealword", 7) -  2.36147E-7
 
 
 
